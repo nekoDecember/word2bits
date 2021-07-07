@@ -437,7 +437,7 @@ void *TrainModelThread(void *id) {
 	real local_reg_loss = 0;
 
   //kokokara
-  
+  /*
   real nor_long_u = 0;
   real nor_long_v = 0;
   for (c = 0; c < layer1_size; c++) {
@@ -448,10 +448,10 @@ void *TrainModelThread(void *id) {
   }
   real nor_long_u_sqr = sqrt(nor_long_u);
   real nor_long_v_sqr = sqrt(nor_long_v);
-  
+  */
 	for (c = 0; c < layer1_size; c++) {
-    u[c + last_word * layer1_size] = u[c + last_word * layer1_size] / nor_long_u_sqr;
-    v[c + last_word * layer1_size] = v[c + last_word * layer1_size] / nor_long_v_sqr;
+    //u[c + last_word * layer1_size] = u[c + last_word * layer1_size] / nor_long_u_sqr;
+    //v[c + last_word * layer1_size] = v[c + last_word * layer1_size] / nor_long_v_sqr;
 
     //kokomade
 
@@ -484,7 +484,7 @@ void *TrainModelThread(void *id) {
 	real local_reg_loss = 0;
   
   //kokokara
-
+/*	      
   real nor_long_u = 0;
   real nor_long_v = 0;
   for (c = 0; c < layer1_size; c++) {
@@ -495,10 +495,10 @@ void *TrainModelThread(void *id) {
   }
   real nor_long_u_sqr = sqrt(nor_long_u);
   real nor_long_v_sqr = sqrt(nor_long_v);
-  
+  */
 	for (c = 0; c < layer1_size; c++) {
-    v[c + l2] = v[c + l2] / nor_long_v_sqr;
-    u[c + l2] = u[c + l2] / nor_long_u_sqr;
+    //v[c + l2] = v[c + l2] / nor_long_v_sqr;
+    //u[c + l2] = u[c + l2] / nor_long_u_sqr;
 
     //kokomade
 
@@ -614,7 +614,7 @@ void TrainModel() {
       */
   for (int iteration = 0; iteration < iter; iteration++) {
     //kokokara
-    /*
+    
     for (a = 0; a < vocab_size; a++){
       real nor_long_u = 0;
       real nor_long_v = 0;
@@ -631,7 +631,7 @@ void TrainModel() {
         v[a*layer1_size+b] = v[a*layer1_size+b] / nor_long_v_sqr;
       }
       }
-      */
+      
     //kokomade
 
     printf("Starting epoch: %d\n", iteration);
