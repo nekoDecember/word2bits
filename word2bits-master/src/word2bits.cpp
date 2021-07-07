@@ -439,19 +439,19 @@ void *TrainModelThread(void *id) {
   //kokokara
   
   real nor_long_u = 0;
-  //real nor_long_v = 0;
+  real nor_long_v = 0;
   for (c = 0; c < layer1_size; c++) {
     real nor_num_u = u[c + last_word * layer1_size];
-    //real nor_num_v = v[c + last_word * layer1_size];
+    real nor_num_v = v[c + last_word * layer1_size];
     nor_long_u += nor_num_u * nor_num_u;
-    //nor_long_v += nor_num_v * nor_num_v;
+    nor_long_v += nor_num_v * nor_num_v;
   }
   real nor_long_u_sqr = sqrt(nor_long_u);
-  //real nor_long_v_sqr = sqrt(nor_long_v);
+  real nor_long_v_sqr = sqrt(nor_long_v);
   
 	for (c = 0; c < layer1_size; c++) {
     u[c + last_word * layer1_size] = u[c + last_word * layer1_size] / nor_long_u_sqr;
-    //v[c + last_word * layer1_size] = v[c + last_word * layer1_size] / nor_long_v_sqr;
+    v[c + last_word * layer1_size] = v[c + last_word * layer1_size] / nor_long_v_sqr;
 
     //kokomade
 
@@ -485,20 +485,20 @@ void *TrainModelThread(void *id) {
   
   //kokokara
 	      
-  //real nor_long_u = 0;
+  real nor_long_u = 0;
   real nor_long_v = 0;
   for (c = 0; c < layer1_size; c++) {
-    //real nor_num_u = u[c + l2];
+    real nor_num_u = u[c + l2];
     real nor_num_v = v[c + l2];
-    //nor_long_u += nor_num_u * nor_num_u;
+    nor_long_u += nor_num_u * nor_num_u;
     nor_long_v += nor_num_v * nor_num_v;
   }
-  //real nor_long_u_sqr = sqrt(nor_long_u);
+  real nor_long_u_sqr = sqrt(nor_long_u);
   real nor_long_v_sqr = sqrt(nor_long_v);
   
 	for (c = 0; c < layer1_size; c++) {
     v[c + l2] = v[c + l2] / nor_long_v_sqr;
-    //u[c + l2] = u[c + l2] / nor_long_u_sqr;
+    u[c + l2] = u[c + l2] / nor_long_u_sqr;
 
     //kokomade
 
@@ -598,10 +598,10 @@ void TrainModel() {
   if (negative > 0) InitUnigramTable();
 
   start = clock();
-  float nor_long = 0;
+  //float nor_long = 0;
 	
   //kokokara
-    
+    /*
     for (a = 0; a < vocab_size; a++){
       real nor_long_u = 0;
       real nor_long_v = 0;
@@ -619,7 +619,7 @@ void TrainModel() {
         v[a*layer1_size+b] = v[a*layer1_size+b] / nor_long_v_sqr;
       }
       }
-      
+      */
     //kokomade
 	
   for (int iteration = 0; iteration < iter; iteration++) {
