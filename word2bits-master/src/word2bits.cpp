@@ -435,19 +435,26 @@ void *TrainModelThread(void *id) {
 	last_word = sen[c];
 	if (last_word == -1) continue;
 	real local_reg_loss = 0;
+
   //kokokara
-  /*
-  real nor_long = 0;
+  
+  real nor_long_u = 0;
+  real nor_long_v = 0;
   for (c = 0; c < layer1_size; c++) {
-    real nor_num = u[c + last_word * layer1_size] + v[c + last_word * layer1_size];
-    nor_long += nor_num * nor_num;
+    real nor_num_u = u[c + last_word * layer1_size];
+    real nor_num_v = v[c + last_word * layer1_size];
+    nor_long_u += nor_num_u * nor_num_u;
+    nor_long_v += nor_num_v * nor_num_v;
   }
-  real nor_long_sqr = sqrt(nor_long);
-  */
+  real nor_long_u_sqr = sqrt(nor_long_u);
+  real nor_long_v_sqr = sqrt(nor_long_v);
+  
 	for (c = 0; c < layer1_size; c++) {
-    //u[c + last_word * layer1_size] = u[c + last_word * layer1_size] / nor_long_sqr;
-    //v[c + last_word * layer1_size] = v[c + last_word * layer1_size] / nor_long_sqr;
+    u[c + last_word * layer1_size] = u[c + last_word * layer1_size] / nor_long_u_sqr;
+    v[c + last_word * layer1_size] = v[c + last_word * layer1_size] / nor_long_v_sqr;
+
     //kokomade
+
 	  real cur_val = quantize(u[c + last_word * layer1_size], local_bitlevel);
 	  context_avg[c] += cur_val;
     //context_avg[c] += cur_val_nor;
@@ -475,33 +482,26 @@ void *TrainModelThread(void *id) {
 	l2 = target * layer1_size;
 	f = 0;
 	real local_reg_loss = 0;
+  
   //kokokara
-  /*
-  real ccc_min = 0;
-  real ccc_max = 0;
-  int ccc = 0;
-  for (ccc = 0; ccc < layer1_size; ccc++) {
-    real ccc_now = v[ c + l2];
-    if (ccc > ccc_max) ccc_max = ccc;
-    if (ccc < ccc_min) ccc_min = ccc;
-  }
-  */
-  //kokokara
-  /*
-  real nor_long = 0;
+
+  real nor_long_u = 0;
+  real nor_long_v = 0;
   for (c = 0; c < layer1_size; c++) {
-    real nor_num = u[c + l2] + v[c + l2];
-    nor_long += nor_num * nor_num;
+    real nor_num_u = u[c + l2];
+    real nor_num_v = v[c + l2];
+    nor_long_u += nor_num_u * nor_num_u;
+    nor_long_v += nor_num_v * nor_num_v;
   }
-  real nor_long_sqr = sqrt(nor_long);
-  */
+  real nor_long_u_sqr = sqrt(nor_long_u);
+  real nor_long_v_sqr = sqrt(nor_long_v);
+  
 	for (c = 0; c < layer1_size; c++) {
-    //real ccc_now_2 = v[c + l2];
-    //real ccc_nor = ((ccc_now_2 - ccc_min) / (ccc_max - ccc_min)) * 2 - 1;
-    //v[c + l2] =ccc_nor;
-    //real cur_val = quantize(ccc_nor, local_bitlevel);
-    //v[c + l2] = v[c + l2] / nor_long_sqr;
-    //u[c + l2] = u[c + l2] / nor_long_sqr;
+    v[c + l2] = v[c + l2] / nor_long_v_sqr;
+    u[c + l2] = u[c + l2] / nor_long_u_sqr;
+
+    //kokomade
+
 	  real cur_val = quantize(v[c + l2], local_bitlevel);
     //f += context_avg[c] * cur_val_nor;
 
@@ -511,7 +511,6 @@ void *TrainModelThread(void *id) {
 	  // Keep track of regularization loss
 	  local_reg_loss += cur_val * cur_val;
 	}
-  //kokomade
 	local_reg_loss = reg * local_reg_loss;
 	
 	if (f > MAX_EXP) g = (label - 1) * alpha;
@@ -530,15 +529,18 @@ void *TrainModelThread(void *id) {
 	  context_avge[c] += g * quantize(v[c + l2], local_bitlevel);
 	}
   //kokokara
+  /*
   real nor_long = 0;
   for (c = 0; c < layer1_size; c++) {
     real nor_num = v[c + l2];
     nor_long += nor_num * nor_num;
   }
   real nor_long_sqr = sqrt(nor_long);
+  */
 	for (c = 0; c < layer1_size; c++) {
 	  v[c + l2] += g * context_avg[c] - 2*alpha*reg*v[c + l2];
-    v[c + l2] = v[c + l2] / nor_long_sqr;
+    //v[c + l2] = v[c + l2] / nor_long_sqr;
+
     //kokomade
 	}
       }
@@ -549,17 +551,23 @@ void *TrainModelThread(void *id) {
 	  if (c >= sentence_length) continue;
 	  last_word = sen[c];
 	  if (last_word == -1) continue;
+
     //kokokara
+
+  /*
   real nor_long = 0;
   for (c = 0; c < layer1_size; c++) {
     real nor_num = u[c+ last_word * layer1_size];
     nor_long += nor_num * nor_num;
   }
   real nor_long_sqr = sqrt(nor_long);
+  */
 	  for (c = 0; c < layer1_size; c++) {
 	    u[c + last_word * layer1_size] += context_avge[c] - 2*alpha*reg*u[c+last_word*layer1_size];
-      u[c + last_word * layer1_size] = u[c + last_word * layer1_size] / nor_long_sqr;
+      //u[c + last_word * layer1_size] = u[c + last_word * layer1_size] / nor_long_sqr;
+
       //kokomade
+
 	  }
 	}
     }
@@ -605,19 +613,27 @@ void TrainModel() {
       }
       */
   for (int iteration = 0; iteration < iter; iteration++) {
-    for (a = 0; a < vocab_size; a++) {
-      
-      float nor_long = 0;
+    //kokokara
+    /*
+    for (a = 0; a < vocab_size; a++){
+      real nor_long_u = 0;
+      real nor_long_v = 0;
       for (b = 0; b < layer1_size; b++) {
-        float nor_base = u[a*layer1_size+b] + v[a*layer1_size+b];
-        nor_long += nor_base * nor_base;
+        float nor_base_u = u[a*layer1_size+b];
+        float nor_base_v = v[a*layer1_size+b];
+        nor_long_u += nor_base_u * nor_base_u;
+        nor_long_v += nor_base_v * nor_base_v;
       }
-      real nor_long_sqr = sqrt(nor_long);
+      real nor_long_u_sqr = sqrt(nor_long_u);
+      real nor_long_v_sqr = sqrt(nor_long_v);
       for (b = 0; b < layer1_size; b++) {
-        u[a*layer1_size+b] = u[a*layer1_size+b] / nor_long_sqr;
-        v[a*layer1_size+b] = v[a*layer1_size+b] / nor_long_sqr;
+        u[a*layer1_size+b] = u[a*layer1_size+b] / nor_long_u_sqr;
+        v[a*layer1_size+b] = v[a*layer1_size+b] / nor_long_v_sqr;
       }
       }
+      */
+    //kokomade
+
     printf("Starting epoch: %d\n", iteration);
     memset(thread_losses, 0, sizeof(double) * num_threads);
     for (a = 0; a < num_threads; a++) pthread_create(&pt[a], NULL, TrainModelThread, (void *)a);
@@ -627,6 +643,7 @@ void TrainModel() {
     printf("Epoch Loss: %lf\n", total_loss_epoch);
     char output_file_cur_iter[MAX_STRING] = {0};
     sprintf(output_file_cur_iter, "%s_epoch%d", output_file, iteration);
+
     if (classes == 0 && save_every_epoch) {
       fo = fopen(output_file_cur_iter, "wb");
       // Save the word vectors
@@ -634,10 +651,17 @@ void TrainModel() {
       for (a = 0; a < vocab_size; a++) {
 	fprintf(fo, "%s ", vocab[a].word);
 	for (b = 0; b < layer1_size; b++) {
+
+    //kokokara
+
     float avg = u[a*layer1_size+b] + v[a*layer1_size+b];
+    //float avg = v[a*layer1_size+b];
+    //float avg = u[a*layer1_size+b];
+
+    //kokomade
+
     //float bb_nor = ((avg - bb_min) / (bb_max - bb_min)) * 2 - 1;
 	  //float avg = u[a*layer1_size+b] + v[a*layer1_size+b];
-	  //avg = quantize(avg, bitlevel);
     avg = quantize(avg, bitlevel);
     //avg_maeni_&_ari
 	  if (binary) fwrite(&avg, sizeof(float), 1, fo);
@@ -658,7 +682,15 @@ void TrainModel() {
     for (a = 0; a < vocab_size; a++) {
       fprintf(fo, "%s ", vocab[a].word);
       for (b = 0; b < layer1_size; b++) {
+
+  //kokokara
+
 	float avg = u[a*layer1_size+b] + v[a*layer1_size+b];
+	//float avg = v[a*layer1_size+b];
+  //float avg = u[a*layer1_size+b];
+
+  //kokomade
+
 	avg = quantize(avg, bitlevel);
 	if (binary) fwrite(&avg, sizeof(float), 1, fo);
   //if (binary) fprintf(fo, "%lf ", avg);
