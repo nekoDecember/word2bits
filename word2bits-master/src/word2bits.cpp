@@ -437,20 +437,20 @@ void *TrainModelThread(void *id) {
 	real local_reg_loss = 0;
 
   //kokokara
-  /*
+  
   real nor_long_u = 0;
-  real nor_long_v = 0;
+  //real nor_long_v = 0;
   for (c = 0; c < layer1_size; c++) {
     real nor_num_u = u[c + last_word * layer1_size];
-    real nor_num_v = v[c + last_word * layer1_size];
+    //real nor_num_v = v[c + last_word * layer1_size];
     nor_long_u += nor_num_u * nor_num_u;
-    nor_long_v += nor_num_v * nor_num_v;
+    //nor_long_v += nor_num_v * nor_num_v;
   }
   real nor_long_u_sqr = sqrt(nor_long_u);
-  real nor_long_v_sqr = sqrt(nor_long_v);
-  */
+  //real nor_long_v_sqr = sqrt(nor_long_v);
+  
 	for (c = 0; c < layer1_size; c++) {
-    //u[c + last_word * layer1_size] = u[c + last_word * layer1_size] / nor_long_u_sqr;
+    u[c + last_word * layer1_size] = u[c + last_word * layer1_size] / nor_long_u_sqr;
     //v[c + last_word * layer1_size] = v[c + last_word * layer1_size] / nor_long_v_sqr;
 
     //kokomade
@@ -484,20 +484,20 @@ void *TrainModelThread(void *id) {
 	real local_reg_loss = 0;
   
   //kokokara
-/*	      
-  real nor_long_u = 0;
+	      
+  //real nor_long_u = 0;
   real nor_long_v = 0;
   for (c = 0; c < layer1_size; c++) {
-    real nor_num_u = u[c + l2];
+    //real nor_num_u = u[c + l2];
     real nor_num_v = v[c + l2];
-    nor_long_u += nor_num_u * nor_num_u;
+    //nor_long_u += nor_num_u * nor_num_u;
     nor_long_v += nor_num_v * nor_num_v;
   }
-  real nor_long_u_sqr = sqrt(nor_long_u);
+  //real nor_long_u_sqr = sqrt(nor_long_u);
   real nor_long_v_sqr = sqrt(nor_long_v);
-  */
+  
 	for (c = 0; c < layer1_size; c++) {
-    //v[c + l2] = v[c + l2] / nor_long_v_sqr;
+    v[c + l2] = v[c + l2] / nor_long_v_sqr;
     //u[c + l2] = u[c + l2] / nor_long_u_sqr;
 
     //kokomade
@@ -599,21 +599,8 @@ void TrainModel() {
 
   start = clock();
   float nor_long = 0;
-  /*
-  for (a = 0; a < vocab_size; a++){
-      for (b = 0; b < layer1_size; b++) {
-        float nor_base = u[a*layer1_size+b] + v[a*layer1_size+b];
-        nor_long += nor_base * nor_base;
-      }
-      real nor_long_sqr = sqrt(nor_long);
-      for (b = 0; b < layer1_size; b++) {
-        u[a*layer1_size+b] = u[a*layer1_size+b] / nor_long_sqr;
-        v[a*layer1_size+b] = v[a*layer1_size+b] / nor_long_sqr;
-      }
-      }
-      */
-  for (int iteration = 0; iteration < iter; iteration++) {
-    //kokokara
+	
+  //kokokara
     
     for (a = 0; a < vocab_size; a++){
       real nor_long_u = 0;
@@ -626,12 +613,36 @@ void TrainModel() {
       }
       real nor_long_u_sqr = sqrt(nor_long_u);
       real nor_long_v_sqr = sqrt(nor_long_v);
+      
       for (b = 0; b < layer1_size; b++) {
         u[a*layer1_size+b] = u[a*layer1_size+b] / nor_long_u_sqr;
         v[a*layer1_size+b] = v[a*layer1_size+b] / nor_long_v_sqr;
       }
       }
       
+    //kokomade
+	
+  for (int iteration = 0; iteration < iter; iteration++) {
+    //kokokara
+    /*
+    for (a = 0; a < vocab_size; a++){
+      real nor_long_u = 0;
+      real nor_long_v = 0;
+      for (b = 0; b < layer1_size; b++) {
+        float nor_base_u = u[a*layer1_size+b];
+        float nor_base_v = v[a*layer1_size+b];
+        nor_long_u += nor_base_u * nor_base_u;
+        nor_long_v += nor_base_v * nor_base_v;
+      }
+      real nor_long_u_sqr = sqrt(nor_long_u);
+      real nor_long_v_sqr = sqrt(nor_long_v);
+      
+      for (b = 0; b < layer1_size; b++) {
+        u[a*layer1_size+b] = u[a*layer1_size+b] / nor_long_u_sqr;
+        v[a*layer1_size+b] = v[a*layer1_size+b] / nor_long_v_sqr;
+      }
+      }
+      */
     //kokomade
 
     printf("Starting epoch: %d\n", iteration);
