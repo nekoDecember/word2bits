@@ -457,8 +457,8 @@ void *TrainModelThread(void *id) {
 		
 		//kokokara
 
-	  //real cur_val = quantize(u[c + last_word * layer1_size], local_bitlevel);	
-	  real cur_val = quantize(u[c + last_word * layer1_size], 0);	
+	  real cur_val = quantize(u[c + last_word * layer1_size], local_bitlevel);	
+	  //real cur_val = quantize(u[c + last_word * layer1_size], 0);	
 		
 		//kokomade
 		
@@ -510,8 +510,8 @@ void *TrainModelThread(void *id) {
 
 		//kokokara
 		
-	  //real cur_val = quantize(v[c + l2], local_bitlevel);
-	real cur_val = quantize(v[c + l2], 0);
+	  real cur_val = quantize(v[c + l2], local_bitlevel);
+	//real cur_val = quantize(v[c + l2], 0);
 		
 		//kokomade
 		
@@ -541,8 +541,8 @@ void *TrainModelThread(void *id) {
 		
 		//kokokara
 		
-	  //context_avge[c] += g * quantize(v[c + l2], local_bitlevel);
-		context_avge[c] += g * quantize(v[c + l2], 0);
+	  context_avge[c] += g * quantize(v[c + l2], local_bitlevel);
+		//context_avge[c] += g * quantize(v[c + l2], 0);
 		
 		//kokomade
 		
@@ -644,7 +644,7 @@ void TrainModel() {
   for (int iteration = 0; iteration < iter; iteration++) {
 	  
     //kokokara
-    
+    if (iteration % 4 == 0){
     for (a = 0; a < vocab_size; a++){
       real nor_long_u = 0;
       real nor_long_v = 0;
@@ -662,7 +662,8 @@ void TrainModel() {
         v[a*layer1_size+b] = v[a*layer1_size+b] / nor_long_v_sqr;
       }
       }
-      
+    }
+	  
     //kokomade
 
     printf("Starting epoch: %d\n", iteration);
