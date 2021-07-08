@@ -457,8 +457,8 @@ void *TrainModelThread(void *id) {
 		
 		//kokokara
 
-	  //real cur_val = quantize(u[c + last_word * layer1_size], local_bitlevel);	
-	  real cur_val = quantize(u[c + last_word * layer1_size], 1);	
+	  real cur_val = quantize(u[c + last_word * layer1_size], local_bitlevel);	
+	  //real cur_val = quantize(u[c + last_word * layer1_size], 1);	
 		
 		//kokomade
 		
@@ -510,8 +510,8 @@ void *TrainModelThread(void *id) {
 
 		//kokokara
 		
-	  //real cur_val = quantize(v[c + l2], local_bitlevel);
-	real cur_val = quantize(v[c + l2], 1);
+	  real cur_val = quantize(v[c + l2], local_bitlevel);
+	//real cur_val = quantize(v[c + l2], 1);
 		
 		//kokomade
 		
@@ -538,7 +538,14 @@ void *TrainModelThread(void *id) {
 	total_loss += local_loss - local_reg_loss;
 	/////////////////////
 	for (c = 0; c < layer1_size; c++) {
+		
+		//kokokara
+		
 	  context_avge[c] += g * quantize(v[c + l2], local_bitlevel);
+		//context_avge[c] += g * quantize(v[c + l2], 1);
+		
+		//kokomade
+		
 	}
   //kokokara
   /*
@@ -637,6 +644,36 @@ void TrainModel() {
   for (int iteration = 0; iteration < iter; iteration++) {
 	  
     //kokokara
+    /*
+    for (a = 0; a < vocab_size; a++){
+      real nor_long_u = 0;
+      real nor_long_v = 0;
+      for (b = 0; b < layer1_size; b++) {
+        float nor_base_u = u[a*layer1_size+b];
+        float nor_base_v = v[a*layer1_size+b];
+        nor_long_u += nor_base_u * nor_base_u;
+        nor_long_v += nor_base_v * nor_base_v;
+      }
+      real nor_long_u_sqr = sqrt(nor_long_u);
+      real nor_long_v_sqr = sqrt(nor_long_v);
+      
+      for (b = 0; b < layer1_size; b++) {
+        u[a*layer1_size+b] = u[a*layer1_size+b] / nor_long_u_sqr;
+        v[a*layer1_size+b] = v[a*layer1_size+b] / nor_long_v_sqr;
+      }
+      }
+      */
+    //kokomade
+
+    printf("Starting epoch: %d\n", iteration);
+    memset(thread_losses, 0, sizeof(double) * num_threads);
+    for (a = 0; a < num_threads; a++) pthread_create(&pt[a], NULL, TrainModelThread, (void *)a);
+    for (a = 0; a < num_threads; a++) pthread_join(pt[a], NULL);
+    double total_loss_epoch = 0;
+    for (a = 0; a < num_threads; a++) total_loss_epoch += thread_losses[a];
+    printf("Epoch Loss: %lf\n", total_loss_epoch);
+	  
+	//kokokara
     
     for (a = 0; a < vocab_size; a++){
       real nor_long_u = 0;
@@ -656,15 +693,8 @@ void TrainModel() {
       }
       }
       
-    //kokomade
-
-    printf("Starting epoch: %d\n", iteration);
-    memset(thread_losses, 0, sizeof(double) * num_threads);
-    for (a = 0; a < num_threads; a++) pthread_create(&pt[a], NULL, TrainModelThread, (void *)a);
-    for (a = 0; a < num_threads; a++) pthread_join(pt[a], NULL);
-    double total_loss_epoch = 0;
-    for (a = 0; a < num_threads; a++) total_loss_epoch += thread_losses[a];
-    printf("Epoch Loss: %lf\n", total_loss_epoch);
+    //kokomade	  
+	  
     char output_file_cur_iter[MAX_STRING] = {0};
     sprintf(output_file_cur_iter, "%s_epoch%d", output_file, iteration);
 
@@ -686,7 +716,14 @@ void TrainModel() {
 
     //float bb_nor = ((avg - bb_min) / (bb_max - bb_min)) * 2 - 1;
 	  //float avg = u[a*layer1_size+b] + v[a*layer1_size+b];
-    avg = quantize(avg, bitlevel);
+		
+		//kokokara
+		
+    //avg = quantize(avg, bitlevel);
+		avg = quantize(avg, 0);
+		
+		//kokomade
+		
     //avg_maeni_&_ari
 	  if (binary) fwrite(&avg, sizeof(float), 1, fo);
 	  //else fprintf(fo, "%lf ", avg);
