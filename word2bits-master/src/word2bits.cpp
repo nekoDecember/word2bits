@@ -644,7 +644,7 @@ void TrainModel() {
   for (int iteration = 0; iteration < iter; iteration++) {
 	  
     //kokokara
-    if (iteration % 4 == 0){
+    if (iteration % 10 == 0){
     for (a = 0; a < vocab_size; a++){
       real nor_long_u = 0;
       real nor_long_v = 0;
