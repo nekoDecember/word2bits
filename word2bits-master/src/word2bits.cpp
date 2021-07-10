@@ -597,7 +597,7 @@ void TrainModel() {
   float nor_long = 0;
   for (int iteration = 0; iteration < iter; iteration++) {
 
-    //kokokara
+    //kokokaraMaxMin
     
     for (a = 0; a < vocab_size; a++){
       
@@ -620,7 +620,32 @@ void TrainModel() {
       }
       }
       
-    //kokomade
+    //kokomadeMaxMin
+	  
+    //kokokaraNorm1
+	  
+    if (iteration % 5 == 0){
+    for (a = 0; a < vocab_size; a++){
+      
+      real nor_long_u = 0;
+      real nor_long_v = 0;
+      for (b = 0; b < layer1_size; b++) {
+        float nor_num_u = u[a*layer1_size+b];
+        float nor_num_v = v[a*layer1_size+b];
+        nor_long_u += nor_num_u * nor_num_u;
+	nor_long_v += nor_num_v * nor_num_v;
+      }
+      real nor_long_u_sqr = sqrt(nor_long_u);
+      real nor_long_v_sqr = sqrt(nor_long_v);
+	    
+      for (b = 0; b < layer1_size; b++) {
+        u[a*layer1_size+b] = u[a*layer1_size+b] / nor_long_u_sqr;
+        v[a*layer1_size+b] = v[a*layer1_size+b] / nor_long_v_sqr;
+      }
+      }
+    }
+      
+    //kokomadeNorm1
 
     printf("Starting epoch: %d\n", iteration);
     memset(thread_losses, 0, sizeof(double) * num_threads);
