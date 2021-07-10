@@ -598,7 +598,7 @@ void TrainModel() {
   for (int iteration = 0; iteration < iter; iteration++) {
 
     //kokokaraMaxMin
-    
+    /*
     for (a = 0; a < vocab_size; a++){
       
       real nor_max_u = 0;
@@ -619,7 +619,7 @@ void TrainModel() {
         v[a*layer1_size+b] = ((v[a*layer1_size+b] - nor_min_v) / (nor_max_v - nor_min_v)) * 2 - 1;
       }
       }
-      
+      */
     //kokomadeMaxMin
 	  
     //kokokaraNorm1
